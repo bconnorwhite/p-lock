@@ -35,9 +35,11 @@ npm install p-lock
 
 ### Types
 ```ts
-import { lock, ReleaseFn } from "p-lock";
+import { getLock, ReleaseFn } from "p-lock";
 
-function lock(key?: string): Promise<ReleaseFn>;
+function getLock(): Lock;
+
+type Lock = (key?: string) => Promise<ReleaseFn>;
 
 type ReleaseFn = () => void;
 ```
@@ -45,7 +47,9 @@ type ReleaseFn = () => void;
 ### Usage
 ```ts
 import { writeFile } from "fs";
-import { lock } from "p-lock";
+import { getLock } from "p-lock";
+
+const lock = getLock();
 
 lock("file").then((release) => {
   setTimeout(() => {

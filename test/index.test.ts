@@ -1,7 +1,8 @@
 import { test, expect } from "@jest/globals";
-import { lock } from "../source";
+import { getLock } from "../source";
 
 test("basic", (done) => {
+  const lock = getLock();
   let last: number;
   Promise.all([
     lock().then((release) => {
@@ -29,6 +30,7 @@ test("basic", (done) => {
 });
 
 test("keys", (done) => {
+  const lock = getLock();
   const order: number[] = [];
   Promise.all([
     lock("a").then((release) => {
