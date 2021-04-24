@@ -7,7 +7,7 @@
     <img alt="TypeScript" src="https://img.shields.io/github/languages/top/bconnorwhite/p-lock.svg">
   </a>
   <a href="https://coveralls.io/github/bconnorwhite/p-lock?branch=master">
-    <img alt="Coverage Status" src="https://coveralls.io/repos/github/bconnorwhite/p-lock.svg?branch=master">
+    <img alt="Coverage Status" src="https://coveralls.io/repos/github/bconnorwhite/p-lock/badge.svg?branch=master">
   </a>
   <a href="https://github.com/bconnorwhite/p-lock">
     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/bconnorwhite/p-lock?label=Stars%20Appreciated%21&style=social">
@@ -33,17 +33,6 @@ npm install p-lock
 
 ## API
 
-### Types
-```ts
-import { getLock, ReleaseFn } from "p-lock";
-
-function getLock(): Lock;
-
-type Lock = (key?: string) => Promise<ReleaseFn>;
-
-type ReleaseFn = () => void;
-```
-
 ### Usage
 ```ts
 import { writeFile } from "fs";
@@ -66,6 +55,63 @@ lock("file").then((release) => {
 });
 
 // contents of test.txt will be "world"
+```
+#### Replace
+Reject and replace any promises waiting for the lock, rather than resolving each in series.
+```ts
+import { writeFile } from "fs";
+import { getLock } from "p-lock";
+
+const lock = getLock({ replace: true });
+
+let writeCounter = 0;
+
+lock("file").then((release) => {
+  setTimeout(() => {
+    writeCounter += 1;
+    writeFile("test.txt", `update #${writeCounter}`, () => {
+      release();
+    });
+  }, 1000);
+});
+
+lock("file").then((release) => {
+  writeCounter += 1;
+  writeFile("test.txt", `update #${writeCounter}`, () => {
+    release();
+  });
+}).catch(() => {
+  // This promise will reject, since the next one replaces.
+});
+
+lock("file").then((release) => {
+  writeCounter += 1;
+  writeFile("test.txt", `update #${writeCounter}`, () => {
+    release();
+  });
+});
+
+// contents of test.txt will be "update #2"
+```
+
+### Types
+```ts
+import { getLock, LockOptions } from "p-lock";
+
+function getLock(): Lock;
+
+type Lock = (key?: string) => Promise<ReleaseFn>;
+
+type ReleaseFn = () => void;
+
+type LockOptions = {
+  /**
+   * When aquiring a lock for some key, replace first promise in line rather than adding to queue.
+   * Replaced promise will be rejected.
+   * Default: `false`
+   */
+  replace?: boolean;
+};
 ```
 
 <br />
