@@ -1,4 +1,5 @@
-<div align="center">
+<!--BEGIN HEADER-->
+<div id="top" align="center">
   <h1>p-lock</h1>
   <a href="https://npmjs.com/package/p-lock">
     <img alt="NPM" src="https://img.shields.io/npm/v/p-lock.svg">
@@ -7,19 +8,32 @@
     <img alt="TypeScript" src="https://img.shields.io/github/languages/top/bconnorwhite/p-lock.svg">
   </a>
   <a href="https://coveralls.io/github/bconnorwhite/p-lock?branch=master">
-    <img alt="Coverage Status" src="https://coveralls.io/repos/github/bconnorwhite/p-lock/badge.svg?branch=master">
-  </a>
-  <a href="https://github.com/bconnorwhite/p-lock">
-    <img alt="GitHub Stars" src="https://img.shields.io/github/stars/bconnorwhite/p-lock?label=Stars%20Appreciated%21&style=social">
-  </a>
-  <a href="https://twitter.com/bconnorwhite">
-    <img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/bconnorwhite.svg?label=%40bconnorwhite&style=social">
+    <img alt="Coverage Status" src="https://img.shields.io/coveralls/github/bconnorwhite/p-lock.svg?branch=master">
   </a>
 </div>
 
 <br />
 
-> Simple promise lock.
+<blockquote align="center">Simple promise lock.</blockquote>
+
+<br />
+
+_If I should maintain this repo, please ⭐️_
+<a href="https://github.com/bconnorwhite/p-lock">
+  <img align="right" alt="GitHub stars" src="https://img.shields.io/github/stars/bconnorwhite/p-lock?label=%E2%AD%90%EF%B8%8F&style=social">
+</a>
+
+_DM me on [Twitter](https://twitter.com/bconnorwhite) if you have questions or suggestions._
+<a href="https://twitter.com/bconnorwhite">
+  <img align="right" alt="Twitter" src="https://img.shields.io/twitter/url?label=%40bconnorwhite&style=social&url=https%3A%2F%2Ftwitter.com%2Fbconnorwhite">
+</a>
+
+---
+<!--END HEADER-->
+
+## About
+
+This package provides a simple promise lock, which is useful for preventing race conditions between multiple promises.
 
 ## Installation
 
@@ -31,9 +45,37 @@ yarn add p-lock
 npm install p-lock
 ```
 
-## API
+```sh
+pnpm install p-lock
+```
 
-### Usage
+## Overview
+
+First, we get a lock function:
+
+```ts
+import { getLock } from "p-lock";
+
+const lock = getLock();
+```
+
+Calling the lock function returns a promise that resolves when the lock is acquired.
+
+The promise resolves with a release function, which must be called to release the lock:
+
+```ts
+lock("example-key").then((release) => {
+  // Now I have the lock for "example-key"
+  // do something...
+  release();
+});
+```
+
+
+## Full Example
+
+In this example, we have two promises writing to the same file. However, we want to ensure that the first one finishes before the second one starts.
+
 ```ts
 import { writeFile } from "fs";
 import { getLock } from "p-lock";
@@ -54,10 +96,15 @@ lock("file").then((release) => {
   });
 });
 
-// contents of test.txt will be "world"
+// Contents of test.txt will be "world"
 ```
-#### Replace
-Reject and replace any promises waiting for the lock, rather than resolving each in series.
+
+### Replace
+
+In some cases, we may want to replace an existing promise waiting for a lock, rather than waiting for it to finish.
+
+The `replace` option allows us to do this:
+
 ```ts
 import { writeFile } from "fs";
 import { getLock } from "p-lock";
@@ -91,37 +138,20 @@ lock("file").then((release) => {
   });
 });
 
-// contents of test.txt will be "update #2"
+// Contents of test.txt will be "update #2"
 ```
 
-### Types
-```ts
-import { getLock, LockOptions } from "p-lock";
-
-function getLock(): Lock;
-
-type Lock = (key?: string) => Promise<ReleaseFn>;
-
-type ReleaseFn = () => void;
-
-type LockOptions = {
-  /**
-   * When aquiring a lock for some key, replace first promise in line rather than adding to queue.
-   * Replaced promise will be rejected.
-   * Default: `false`
-   */
-  replace?: boolean;
-};
-```
+<!--BEGIN FOOTER-->
 
 <br />
 
-<h2>Dev Dependencies<img align="right" alt="David" src="https://img.shields.io/david/dev/bconnorwhite/p-lock.svg"></h2>
+<h2>Dev Dependencies</h2>
 
-- [@bconnorwhite/bob](https://www.npmjs.com/package/@bconnorwhite/bob): Bob is a toolkit for TypeScript projects
+- [autorepo](https://www.npmjs.com/package/autorepo): Autorepo abstracts away your dev dependencies, providing a single command to run all of your scripts.
 
 <br />
 
-<h2>License <img align="right" alt="license" src="https://img.shields.io/npm/l/p-lock.svg"></h2>
+<h2 id="license">License <a href="https://opensource.org/licenses/MIT"><img align="right" alt="license" src="https://img.shields.io/npm/l/p-lock.svg"></a></h2>
 
-[MIT](https://opensource.org/licenses/MIT)
+[MIT](https://opensource.org/licenses/MIT) - _MIT License_
+<!--END FOOTER-->

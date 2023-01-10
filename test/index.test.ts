@@ -1,5 +1,5 @@
 import { test, expect } from "@jest/globals";
-import { getLock } from "../source";
+import { getLock } from "../source/index.js";
 
 test("basic", async () => {
   const lock = getLock();
