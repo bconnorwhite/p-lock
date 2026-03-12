@@ -7,6 +7,9 @@
   <a href="https://github.com/bconnorwhite/p-lock">
     <img alt="TypeScript" src="https://img.shields.io/github/languages/top/bconnorwhite/p-lock.svg">
   </a>
+  <a href="https://coveralls.io/github/bconnorwhite/p-lock?branch=main">
+    <img alt="Coverage Status" src="https://img.shields.io/coveralls/github/bconnorwhite/p-lock.svg?branch=main">
+  </a>
 </div>
 
 <br />
