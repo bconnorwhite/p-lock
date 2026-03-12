@@ -1,4 +1,3 @@
-
 export type ReleaseFn = () => void;
 
 type StartFn = (release: ReleaseFn) => void;
@@ -17,7 +16,7 @@ export type Lock = (key?: string) => Promise<ReleaseFn>;
 
 export type LockOptions = {
   /**
-   * When aquiring a lock for some key, replace first promise in line rather than adding to queue.
+   * When acquiring a lock for some key, replace first promise in line rather than adding to queue.
    * Replaced promise will be rejected.
    * Default: `false`
    */
@@ -36,10 +35,8 @@ export function getLock(options: LockOptions = {}) {
   }
 
   return async (key = "") => {
-    const queue = queues[key] ?? [];
-    if(queues[key] === undefined) {
-      queues[key] = queue;
-    }
+    queues[key] ??= [];
+    const queue = queues[key];
     return new Promise<ReleaseFn>((start: StartFn, reject: RejectFn) => {
       if(options.replace && queue.length > 1) {
         queue[1]?.reject();
@@ -54,9 +51,7 @@ export function getLock(options: LockOptions = {}) {
         });
       }
       if(queue.length === 1) {
-        return startNext(key);
-      } else {
-        return undefined;
+        startNext(key);
       }
     });
   };

@@ -7,47 +7,70 @@
   <a href="https://github.com/bconnorwhite/p-lock">
     <img alt="TypeScript" src="https://img.shields.io/github/languages/top/bconnorwhite/p-lock.svg">
   </a>
-  <a href="https://coveralls.io/github/bconnorwhite/p-lock?branch=master">
-    <img alt="Coverage Status" src="https://img.shields.io/coveralls/github/bconnorwhite/p-lock.svg?branch=master">
-  </a>
 </div>
 
 <br />
 
 <blockquote align="center">Simple promise lock.</blockquote>
 
-<br />
-
-_If I should maintain this repo, please ⭐️_
-<a href="https://github.com/bconnorwhite/p-lock">
-  <img align="right" alt="GitHub stars" src="https://img.shields.io/github/stars/bconnorwhite/p-lock?label=%E2%AD%90%EF%B8%8F&style=social">
-</a>
-
-_DM me on [Twitter](https://twitter.com/bconnorwhite) if you have questions or suggestions._
-<a href="https://twitter.com/bconnorwhite">
-  <img align="right" alt="Twitter" src="https://img.shields.io/twitter/url?label=%40bconnorwhite&style=social&url=https%3A%2F%2Ftwitter.com%2Fbconnorwhite">
-</a>
-
 ---
 <!--END HEADER-->
 
-## About
-
-This package provides a simple promise lock, which is useful for preventing race conditions between multiple promises.
-
+<!-- BEGIN INSTALLATION -->
 ## Installation
 
-```sh
-yarn add p-lock
-```
+<details open>
+  <summary>
+    <a href="https://www.npmjs.com/package/p-lock">
+      <img src="https://img.shields.io/badge/npm-CB3837?logo=npm&logoColor=white" alt="NPM" />
+    </a>
+  </summary>
 
 ```sh
 npm install p-lock
 ```
 
+</details>
+
+<details>
+  <summary>
+    <a href="https://yarnpkg.com/package/p-lock">
+      <img src="https://img.shields.io/badge/yarn-2C8EBB?logo=yarn&logoColor=white" alt="Yarn" />
+    </a>
+  </summary>
+
 ```sh
-pnpm install p-lock
+yarn add p-lock
 ```
+
+</details>
+
+<details>
+  <summary>
+    <img src="https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=white" alt="PNPM" />
+  </summary>
+
+```sh
+pnpm add p-lock
+```
+
+</details>
+
+<details>
+  <summary>
+    <img src="https://img.shields.io/badge/bun-EE81C3?logo=bun&logoColor=white" alt="Bun" />
+  </summary>
+
+```sh
+bun add p-lock
+```
+
+</details>
+<!-- END INSTALLATION -->
+
+## About
+
+This package provides a simple promise queue, which is useful for preventing race conditions between multiple promises.
 
 ## Overview
 
@@ -59,18 +82,17 @@ import { getLock } from "p-lock";
 const lock = getLock();
 ```
 
-Calling the lock function returns a promise that resolves when the lock is acquired.
+Calling the lock function returns a promise that resolves when it reaches the front of the queue.
 
-The promise resolves with a release function, which must be called to release the lock:
+The promise resolves with a release function, which must be called to continue the queue:
 
 ```ts
 lock("example-key").then((release) => {
-  // Now I have the lock for "example-key"
+  // Now this callback is at the front of the queue for "example-key"
   // do something...
   release();
 });
 ```
-
 
 ## Full Example
 
@@ -142,15 +164,6 @@ lock("file").then((release) => {
 ```
 
 <!--BEGIN FOOTER-->
-
-<br />
-
-<h2>Dev Dependencies</h2>
-
-- [autorepo](https://www.npmjs.com/package/autorepo): Autorepo abstracts away your dev dependencies, providing a single command to run all of your scripts.
-
-<br />
-
 <h2 id="license">License <a href="https://opensource.org/licenses/MIT"><img align="right" alt="license" src="https://img.shields.io/npm/l/p-lock.svg"></a></h2>
 
 [MIT](https://opensource.org/licenses/MIT) - _MIT License_

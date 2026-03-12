@@ -1,10 +1,10 @@
-import { test, expect } from "@jest/globals";
-import { getLock } from "../source/index.js";
+import { getLock } from "../src/index.js";
 
-test("basic", async () => {
+test("serializes calls for the same key", async () => {
   const lock = getLock();
-  let last: number;
-  return Promise.all([
+  let last = 0;
+
+  await Promise.all([
     lock().then((release) => {
       return new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -23,15 +23,16 @@ test("basic", async () => {
         }, 10);
       });
     })
-  ]).then(() => {
-    expect(last).toBe(2);
-  });
+  ]);
+
+  expect(last).toBe(2);
 });
 
-test("keys", async () => {
+test("runs different keys independently", async () => {
   const lock = getLock();
   const order: number[] = [];
-  return Promise.all([
+
+  await Promise.all([
     lock("a").then((release) => {
       return new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -59,17 +60,19 @@ test("keys", async () => {
         }, 10);
       });
     })
-  ]).then(() => {
-    expect(order[0]).toBe(2);
-    expect(order[1]).toBe(0);
-    expect(order[2]).toBe(1);
-  });
+  ]);
+
+  expect(order[0]).toBe(2);
+  expect(order[1]).toBe(0);
+  expect(order[2]).toBe(1);
 });
 
-test("replace", async () => {
+test("replace rejects the displaced waiter", async () => {
   const lock = getLock({ replace: true });
   let count = 0;
-  return Promise.all([
+  let replaced = false;
+
+  await Promise.all([
     lock().then((release) => {
       return new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -87,7 +90,9 @@ test("replace", async () => {
           resolve();
         }, 10);
       });
-    }).catch(() => {}),
+    }).catch(() => {
+      replaced = true;
+    }),
     lock().then((release) => {
       return new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -97,8 +102,16 @@ test("replace", async () => {
         }, 10);
       });
     })
-  ]).then(() => {
-    expect(count).toBe(2);
-  });
-});
+  ]);
 
+  expect(count).toBe(2);
+  expect(replaced).toBe(true);
+});
+test("works without node-specific globals", async () => {
+  if(typeof globalThis.process === "undefined") {
+    expect(typeof globalThis.process).toBe("undefined");
+  }
+  const release = await getLock()();
+  expect(typeof release).toBe("function");
+  release();
+});
